@@ -2,7 +2,7 @@
 
 var angBase = "/api";
 //var authBase = angBase;
-var authBase = "https://auth.strongloop.com/api";
+var authBase = "http://demo.strongloop.com:3001/api";
 
 /**
  * @ngdoc overview

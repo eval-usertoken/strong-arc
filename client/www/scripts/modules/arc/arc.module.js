@@ -42,6 +42,7 @@ var Arc = angular.module('Arc', [
   'Explorer',
   'Model',
   'Landing',
+  'Licensing',
   'Styleguide',
   'BuildDeploy',
   'Metrics',
@@ -128,8 +129,12 @@ Arc.config([
         url: '/styleguide',
         controller: 'StyleguideController',
         templateUrl: './scripts/modules/styleguide/templates/styleguide.main.html'
+      })
+      .state('licensing', {
+        url: '/licensing',
+        controller: 'LicensingMainController',
+        templateUrl: './scripts/modules/licensing/templates/licensing.main.html'
       });
-
   }
 ]);
 
@@ -137,9 +142,13 @@ Arc.run([
     '$location',
     '$state',
     '$rootScope',
+    '$log',
+    '$q',
+    '$http',
     'ArcUserService',
+    'LicensingService',
     'segmentio',
-    function($location, $state, $rootScope, ArcUserService, segmentio){
+    function($location, $state, $rootScope, $log, $q, $http, ArcUserService, LicensingService, segmentio){
       // finish initialization of segment.io analytics.js
       if (window.analytics && window.analytics.load) {
         window.analytics.load(CONST.SEGMENTIO_WRITE_KEY);
@@ -148,24 +157,41 @@ Arc.run([
 
       // Redirect to login if route requires auth and you're not logged in
       $rootScope.$on('$stateChangeStart', function (event, next) {
+        function isAppModule(url){
+          return LicensingService.getArcFeatures()
+            .then(function(arcFeatures){
+              return _.contains(arcFeatures, url.substr(1)); //remove '/' off page url
+            });
+        }
 
-        if ( !ArcUserService.isAuthUser() && next.url !== '/login' ) {
-          event.preventDefault(); //prevent current page from loading
-          $state.go('login');
-        } else {
-          //fire off segment.io identify from cookie values
-          segmentio.identify(ArcUserService.getCurrentUserId(), {
-            name : ArcUserService.getCurrentUsername(),
-            email : ArcUserService.getCurrentUserEmail()
-          });
-          //fire off segment.io event on module invocation and ignore home, login, register
-          if (!_.contains(CONST.NON_ARC_MODULES, next.name)) {
-            segmentio.track(next.name);
+        function handleStateChange(){
+          if ( !ArcUserService.isAuthUser() && next.url !== '/login' ) {
+            event.preventDefault(); //prevent current page from loading
+            $state.go('login');
+          } else {
+            //fire off segment.io identify from cookie values
+            segmentio.identify(ArcUserService.getCurrentUserId(), {
+              name : ArcUserService.getCurrentUsername(),
+              email : ArcUserService.getCurrentUserEmail()
+            });
+            //fire off segment.io event on module invocation and ignore home, login, register
+            if (!_.contains(CONST.NON_ARC_MODULES, next.name)) {
+              segmentio.track(next.name);
+            }
           }
         }
+
+        isAppModule(next.url)
+          .then(function(isApp){
+            if ( isApp ) {
+              return LicensingService.validateLicenses(next.url)
+                .then(handleStateChange);
+              //.catch(logoutWithMessage);
+            }
+
+            handleStateChange();
+          });
       });
-
-
     }
   ]);
 
@@ -179,8 +205,9 @@ Arc.config([
 Arc.factory('arcRequestInterceptor', [
   '$q',
   '$location',
+  '$log',
   '$cookieStore',
-  function ($q, $location, $cookieStore) {
+  function ($q, $location, $log, $cookieStore) {
     function isLocal(url, host){
       var isLocal = false;
 
@@ -193,11 +220,16 @@ Arc.factory('arcRequestInterceptor', [
       return isLocal;
     }
 
+
     return {
       'request': function (config) {
         var at = $cookieStore.get('accessToken');
+
         if (at) {
-          if ( isLocal(config.url, $location.host()) ) {
+          if (
+            isLocal(config.url, $location.host()) ||
+            config.url.indexOf('demo.strongloop.com') > -1
+          ) {
             config.headers.authorization = at;
           } else {
             delete config.headers.authorization;

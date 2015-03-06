@@ -32,6 +32,7 @@
           <span class="dropdown" dropdown on-toggle="toggled(open)" data-id="ArcAccountDropdown" title="logout">
             <a href class="dropdown-toggle" dropdown-toggle><i class="icon icon-on-off"></i></a>
             <ul class="dropdown-menu">
+              <li><a ui-sref="licensing">Licensing</a></li>
               <li lb-register-nav-item></li>
               <li lb-login-nav-item></li>
               <li sl-user-logout-nav-item></li>
@@ -244,6 +245,11 @@
 <script src="./scripts/modules/styleguide/styleguide.directives.js"></script>
 <script src="./scripts/modules/styleguide/styleguide.controllers.js"></script>
 
+<!-- licensing -->
+<script src="./scripts/modules/licensing/licensing.module.js"></script>
+<script src="./scripts/modules/licensing/licensing.services.js"></script>
+<!--<script src="./scripts/modules/licensing/licensing.directives.js"></script>-->
+<script src="./scripts/modules/licensing/licensing.controllers.js"></script>
 
 <!-- angular-segmentio -->
 <script src="./scripts/vendor/angular-segmentio/angular-segmentio.js"></script>
