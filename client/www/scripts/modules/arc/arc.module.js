@@ -42,7 +42,7 @@ var Arc = angular.module('Arc', [
   'Explorer',
   'Model',
   'Landing',
-  'Licensing',
+  'Licenses',
   'Styleguide',
   'BuildDeploy',
   'Metrics',
@@ -130,10 +130,10 @@ Arc.config([
         controller: 'StyleguideController',
         templateUrl: './scripts/modules/styleguide/templates/styleguide.main.html'
       })
-      .state('licensing', {
-        url: '/licensing',
-        controller: 'LicensingMainController',
-        templateUrl: './scripts/modules/licensing/templates/licensing.main.html'
+      .state('licenses', {
+        url: '/licenses',
+        controller: 'LicensesMainController',
+        templateUrl: './scripts/modules/licenses/templates/licenses.main.html'
       });
   }
 ]);
@@ -146,9 +146,9 @@ Arc.run([
     '$q',
     '$http',
     'ArcUserService',
-    'LicensingService',
+    'LicensesService',
     'segmentio',
-    function($location, $state, $rootScope, $log, $q, $http, ArcUserService, LicensingService, segmentio){
+    function($location, $state, $rootScope, $log, $q, $http, ArcUserService, LicensesService, segmentio){
       // finish initialization of segment.io analytics.js
       if (window.analytics && window.analytics.load) {
         window.analytics.load(CONST.SEGMENTIO_WRITE_KEY);
@@ -158,7 +158,7 @@ Arc.run([
       // Redirect to login if route requires auth and you're not logged in
       $rootScope.$on('$stateChangeStart', function (event, next) {
         function isAppModule(url){
-          return LicensingService.getArcFeatures()
+          return LicensesService.getArcFeatures()
             .then(function(arcFeatures){
               return _.contains(arcFeatures, url.substr(1)); //remove '/' off page url
             });
@@ -184,7 +184,7 @@ Arc.run([
         isAppModule(next.url)
           .then(function(isApp){
             if ( isApp ) {
-              return LicensingService.validateLicenses(next.url)
+              return LicensesService.validateLicenses(next.url)
                 .then(handleStateChange);
               //.catch(logoutWithMessage);
             }

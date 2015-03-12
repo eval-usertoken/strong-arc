@@ -39,7 +39,7 @@ var server = arc.listen(port, function(err) {
   }
 
   //add optional path if flag is passed
-  var path = '#/' + ( argv.indexOf('--login') > -1 ? 'login' : '' );
+  var path = '#/' + ( argv.indexOf('--licenses') > -1 ? 'licenses' : '' );
   var url = util.format('http://%s:%s/%s', DEFAULT_ARC_HOST,
     server.address().port, path);
 

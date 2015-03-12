@@ -1,4 +1,4 @@
-Licensing.service('LicensingService', [
+Licenses.service('LicensesService', [
   '$q',
   '$http',
   '$log',

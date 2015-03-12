@@ -1,12 +1,12 @@
-Licensing.controller('LicensingMainController', [
+Licenses.controller('LicensesMainController', [
   '$scope',
   '$q',
-  'LicensingService',
-  function ($scope, $q, LicensingService) {
+  'LicensesService',
+  function ($scope, $q, LicensesService) {
 
     window.setScrollView('.common-instance-view-container');
 
-    LicensingService.getLicenses()
+    LicensesService.getLicenses()
       .then(function(data){
         $scope.licenses = data.data;
       });
