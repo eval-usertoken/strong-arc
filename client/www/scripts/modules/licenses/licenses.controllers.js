@@ -8,6 +8,6 @@ Licenses.controller('LicensesMainController', [
 
     LicensesService.getLicenses()
       .then(function(data){
-        $scope.licenses = data.data;
+        $scope.licenses = data;
       });
   }]);

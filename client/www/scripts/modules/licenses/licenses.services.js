@@ -3,17 +3,13 @@ Licenses.service('LicensesService', [
   '$http',
   '$log',
   'ArcUserService',
-  function ($q, $http, $log, ArcUserService) {
+  'Subscription',
+  function ($q, $http, $log, ArcUserService, Subscription) {
     var svc = this;
     var apiUrl = 'http://demo.strongloop.com:3001/api';
 
     svc.getAllProducts = function(){
-      var url = apiUrl + '/subscriptions/products';
-
-      return $http.get(url, { cache: true })
-        .then(function(data){
-          return data.data;
-        });
+      return Subscription.getProducts().$promise;
     };
 
     svc.getArcFeatures = function(){
@@ -25,15 +21,14 @@ Licenses.service('LicensesService', [
 
     svc.getLicenses = function() {
       var userId = ArcUserService.getCurrentUserId();
-      var url = apiUrl + '/users/'+userId+'/subscriptions';
 
-      return $http.get(url, { cache: false });
+      return Subscription.getSubscriptions({ userId: userId }).$promise;
     };
 
     svc.getInvalidLicenses = function(data, page){
       var def = $q.defer();
       var now = moment().unix();
-      var licenses = data.data;
+      var licenses = data;
 
       function isLicenseInvalid(license){
         var isArcLicense = license.product === 'arc';
@@ -42,7 +37,7 @@ Licenses.service('LicensesService', [
         var isExpired = expirationDate < now+86400*1; //1 day from now
 
         //skip feature check on non-arc licenses as they don't apply here
-        if ( !isArcLicense ) return isExpired;
+        if ( !isArcLicense ) return false;
 
         //check features allowed
         var features = license.features.split(', ');
@@ -60,13 +55,11 @@ Licenses.service('LicensesService', [
 
     svc.renewLicenses = function(licenses){
       function renew(license){
-        var apiUrl = svc.getApiUrl();
         var userId = ArcUserService.getCurrentUserId();
-        var url = apiUrl + '/users/'+userId+'/renewTrial'; //todo need endpoint to renew
 
         return svc.getArcFeatures()
           .then(function(arcFeatures){
-            return $http.post(url, { product: 'arc', features: arcFeatures });
+            return Subscription.renewTrial({ userId: userId }, { product: 'arc', features: arcFeatures }).$promise;
           });
       }
 
