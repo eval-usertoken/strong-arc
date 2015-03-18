@@ -19,7 +19,7 @@ if (argv.indexOf('-h') !== -1 || argv.indexOf('--help') !== -1) {
 
 var arc = require('../server/server');
 
-if(pathArg) {
+if(pathArg && pathArg.indexOf('--licenses') === -1 ) {
   WORKSPACE_DIR = path.join(WORKSPACE_DIR, pathArg);
 }
 
