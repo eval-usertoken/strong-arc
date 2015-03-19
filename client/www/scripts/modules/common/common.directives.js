@@ -136,17 +136,6 @@ Common.directive('slCommonSelectOnClick', function () {
   };
 });
 
-Common.directive('slDataTable', function() {
-  return {
-    restrict: 'A',
-    link: function($scope, element, attrs) {
-      $(element).find('input').each(function() {
-        console.log('foo', this);
-      });
-    }
-  };
-});
-
 Common.directive('slCommonLoadingIndicator', [
   function() {
     return {
