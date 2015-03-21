@@ -55,7 +55,8 @@ var Arc = angular.module('Arc', [
   'checklist-model',
   'ngGrid',
   'angularFileUpload',
-  'segmentio'
+  'segmentio',
+  'angularMoment'
 ]);
 
 Arc.value('CONST', CONST);
