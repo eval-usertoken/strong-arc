@@ -173,9 +173,14 @@ Licenses.service('LicensesService', [
           productKeys.map(function(id){
             //check user licenses and add them to product list
             licenses.forEach(function(lic){
+              var expirationDate = moment(lic.expirationDate).unix();
+              var now = moment().unix();
+              var isExpired = expirationDate < now+86400*1;
+
               if ( lic.product === id ) {
                 var features = lic.features.split(', ');
                 lic.access = {};
+                lic.isExpired = isExpired;
 
                 //apply feature access flag for easy access in view
                 features.map(function(feature){

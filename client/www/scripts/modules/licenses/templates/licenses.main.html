@@ -48,7 +48,7 @@
                   </ul>
                 </div></td>
                 <td><div class="date activation-date" ng-if="product.license">{{product.license.activationDate | amDateFormat:'MMMM Do YYYY'}}</div></td>
-                <td><div class="date expiration-date" ng-if="product.license">{{product.license.expirationDate | amDateFormat:'MMMM Do YYYY'}}</div></td>
+                <td><div class="date expiration-date" ng-class="{ expired: product.license.isExpired }" ng-if="product.license">{{product.license.expirationDate | amDateFormat:'MMMM Do YYYY'}}</div></td>
                 <!--<td><div class="license-key">{{product.license.licenseKey}}</div></td>-->
               </tr>
             </tbody>
