@@ -1,9 +1,14 @@
 // Copyright StrongLoop 2014
 ArcUser.directive('slUserLoginView', [
+  '$stateParams',
+  '$state',
   'ArcUserService',
-  function(ArcUserService) {
+  function($stateParams, $state, ArcUserService) {
 
     return {
+      scope: {
+        ref: '@'
+      },
       controller: function ($scope, $location, ArcUserService) {
 
         $scope.loginErrorMessage = '';
@@ -24,7 +29,14 @@ ArcUser.directive('slUserLoginView', [
         $scope.loginRequest = function (formConfig) {
           $scope.loginResult = ArcUserService.loginRequest(formConfig).
             then(function(response) {
-              $location.path('/');
+              var ref = $scope.ref;
+
+              if ( ref ) {
+                $state.go(ref);
+              } else {
+                $state.go('home');
+              }
+              //$location.path('/');
             }).catch(function(response) {
               $scope.loginErrorMessage = 'Authentication attempt failed. Please check your username (email) and password and try again';
               $scope.resetCredentials();

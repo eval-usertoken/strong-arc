@@ -3,8 +3,9 @@ ArcUser.controller('LoginController', [
   '$scope',
   '$location',
   'ArcUserService',
-  function ($scope, $location, ArcUserService) {
-    //noop
+  'ref',
+  function ($scope, $location, ArcUserService, ref) {
+    $scope.ref = ref;
   }
 ]);
 

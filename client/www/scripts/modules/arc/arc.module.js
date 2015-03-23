@@ -117,9 +117,14 @@ Arc.config([
         controller: 'BuildDeployController'
       })
       .state('login', {
-        url: '/login',
+        url: '/login?ref',
         controller: 'LoginController',
-        templateUrl: './scripts/modules/arc-user/templates/login.html'
+        templateUrl: './scripts/modules/arc-user/templates/login.html',
+        resolve: {
+          ref: ['$stateParams', function($stateParams){
+            return $stateParams.ref;
+          }]
+        }
       })
       .state('register', {
         url: '/register',
@@ -166,9 +171,9 @@ Arc.run([
         }
 
         function handleStateChange(){
-          if ( !ArcUserService.isAuthUser() && next.url !== '/login' ) {
+          if ( !ArcUserService.isAuthUser() && next.url.indexOf('/login') === -1 ) {
             event.preventDefault(); //prevent current page from loading
-            $state.go('login');
+            $state.go('login', { ref: next.name });
           } else {
             //fire off segment.io identify from cookie values
             segmentio.identify(ArcUserService.getCurrentUserId(), {
