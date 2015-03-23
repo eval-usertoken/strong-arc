@@ -124,7 +124,7 @@ Licenses.service('LicensesService', [
       productKeys.map(function(id){
         var product = products[id];
         var license = product.license || {};
-        var access = license.access;
+        var access = license.access || {};
         var expirationDate = moment(license.expirationDate).unix();
         var now = moment().unix();
         var isExpired = expirationDate < now+86400*1;
